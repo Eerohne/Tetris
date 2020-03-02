@@ -67,18 +67,18 @@ class Game extends JPanel implements KeyListener{
     
     private void drawTetromino(Tetromino tetromino, Graphics g){
         g.setColor(tetromino.color);
-        for (Point point : tetromino.tetromino) {
+        for (Minos point : tetromino.tetromino) {
                 g.fillRect(point.x, point.y, 20, 20);
         }
     }
     
     public void updateTetromino(){
-        for (Point square : bloc.tetromino) {
+        for (Minos square : bloc.tetromino) {
             square.y += 20;
         }
         if(collision()){
             while(!containsEarthCollision()){
-                for (Point square : bloc.tetromino) {
+                for (Minos square : bloc.tetromino) {
                     square.y -= 20;
                 }
             }
@@ -97,7 +97,7 @@ class Game extends JPanel implements KeyListener{
         
         for(int i = 0; i < 20; i++){
             for (Tetromino tetromino : tetrominos) {
-                for (Point point : tetromino.tetromino) {
+                for (Minos point : tetromino.tetromino) {
                     if(point.y == (i*20))
                         ++row;
                 }
@@ -145,7 +145,7 @@ class Game extends JPanel implements KeyListener{
             for (Integer fullRow : fullRows) {
                 for(int i = fullRow; i >= 0; i--){
                     for (Tetromino tetromino : tetrominos) {
-                        for (Point point : tetromino.tetromino) {
+                        for (Minos point : tetromino.tetromino) {
                             if(point.y < i*20){
                                 point.y += 20;
                             }
@@ -158,12 +158,12 @@ class Game extends JPanel implements KeyListener{
     
     public boolean collision(){
         
-        for (Point point : bloc.tetromino) {
+        for (Minos point : bloc.tetromino) {
             if(point.y >= 400)
                 return true;
             for (Tetromino tetromino : tetrominos) {
-                for (Point staticPoint : tetromino.tetromino) {
-                    if(point.equals(staticPoint))
+                for (Minos staticMinos : tetromino.tetromino) {
+                    if(point.equals(staticMinos))
                         return true;
                 }
             }
@@ -174,7 +174,7 @@ class Game extends JPanel implements KeyListener{
     
     public boolean containsEarthCollision(){
         int i = 0;
-        for (Point point : bloc.tetromino) {
+        for (Minos point : bloc.tetromino) {
             if((point.y <= 380) && !collision())
                 ++i;
         }
@@ -184,7 +184,7 @@ class Game extends JPanel implements KeyListener{
     }
     
     private boolean sideCollision(boolean left){
-        for (Point point : bloc.tetromino) {
+        for (Minos point : bloc.tetromino) {
             if(left){
                 if(point.x < 0)
                     return true;
@@ -195,9 +195,9 @@ class Game extends JPanel implements KeyListener{
             }
             
             for (Tetromino tetromino : tetrominos) {
-                for (Point staticPoint : tetromino.tetromino) {
-                    if(staticPoint.equals(point)){
-                        if(staticPoint.equals(point)){
+                for (Minos staticMinos : tetromino.tetromino) {
+                    if(staticMinos.equals(point)){
+                        if(staticMinos.equals(point)){
                             System.out.println("INDEED");
                             return true;
                         }
@@ -210,7 +210,7 @@ class Game extends JPanel implements KeyListener{
     }
     
     public boolean gameOver(){
-        for (Point point : bloc.tetromino) {
+        for (Minos point : bloc.tetromino) {
             if(collision() && point.y <= 0)
                 return true;
         }
@@ -261,7 +261,7 @@ class Game extends JPanel implements KeyListener{
                     break;
                 case KeyEvent.VK_DOWN:
                     if(!collision()){
-                        for (Point point : bloc.tetromino)
+                        for (Minos point : bloc.tetromino)
                             point.y += 20;
                     }
                     break;
@@ -269,21 +269,21 @@ class Game extends JPanel implements KeyListener{
                     bloc.rotation();
                     break;
                 case KeyEvent.VK_LEFT:
-                    for (Point point : bloc.tetromino){
+                    for (Minos point : bloc.tetromino){
                         point.x -= 20;
                     }
                     if(sideCollision(true))
-                        for (Point point : bloc.tetromino){
+                        for (Minos point : bloc.tetromino){
                             point.x += 20;
                         }
                     repaint();
                     break;
                 case KeyEvent.VK_RIGHT:
-                    for (Point point : bloc.tetromino){
+                    for (Minos point : bloc.tetromino){
                         point.x += 20;
                     }
                     if(sideCollision(false))
-                        for (Point point : bloc.tetromino){
+                        for (Minos point : bloc.tetromino){
                             point.x -= 20;
                         }
                     repaint();
@@ -298,7 +298,7 @@ class Game extends JPanel implements KeyListener{
 
 
 class Tetromino{
-    Point[] tetromino = new Point[4];
+    Minos[] tetromino = new Minos[4];
     Color color;
     
     public Tetromino(){
@@ -316,52 +316,52 @@ class Tetromino{
         Random random = new Random();
         switch(random.nextInt(7)){
             case 0://I MIDDLE FLAT 21
-                tetromino[0] = new Point(3, -1);
-                tetromino[1] = new Point(4, -1);
-                tetromino[2] = new Point(5, -1);
-                tetromino[3] = new Point(6, -1);
+                tetromino[0] = new Minos(3, -1);
+                tetromino[1] = new Minos(4, -1);
+                tetromino[2] = new Minos(5, -1);
+                tetromino[3] = new Minos(6, -1);
                 color = Color.cyan;
                 break;
             case 1://O MIDDLE 21/22
-                tetromino[0] = new Point(4, -1);
-                tetromino[1] = new Point(5, -1);
-                tetromino[2] = new Point(4, -2);
-                tetromino[3] = new Point(5, -2);
+                tetromino[0] = new Minos(4, -1);
+                tetromino[1] = new Minos(5, -1);
+                tetromino[2] = new Minos(4, -2);
+                tetromino[3] = new Minos(5, -2);
                 color = Color.yellow;
                 break;
             case 2://T LEFT-MIDDLE FLAT-SIDE 21/22
-                tetromino[0] = new Point(3, -1);
-                tetromino[1] = new Point(4, -1);
-                tetromino[2] = new Point(5, -1);
-                tetromino[3] = new Point(4, -2);
+                tetromino[0] = new Minos(3, -1);
+                tetromino[1] = new Minos(4, -1);
+                tetromino[2] = new Minos(5, -1);
+                tetromino[3] = new Minos(4, -2);
                 color = Color.magenta;
                 break; 
             case 3://S LEFT-MIDDLE 21/22
-                tetromino[0] = new Point(3, -1);
-                tetromino[1] = new Point(4, -1);
-                tetromino[2] = new Point(4, -2);
-                tetromino[3] = new Point(5, -2);
+                tetromino[0] = new Minos(3, -1);
+                tetromino[1] = new Minos(4, -1);
+                tetromino[2] = new Minos(4, -2);
+                tetromino[3] = new Minos(5, -2);
                 color = Color.green;
                 break;
             case 4://Z LEFT-MIDDLE 21/22
-                tetromino[0] = new Point(3, -2);
-                tetromino[1] = new Point(4, -2);
-                tetromino[2] = new Point(4, -1);
-                tetromino[3] = new Point(5, -1);
+                tetromino[0] = new Minos(3, -2);
+                tetromino[1] = new Minos(4, -2);
+                tetromino[2] = new Minos(4, -1);
+                tetromino[3] = new Minos(5, -1);
                 color = Color.red;
                 break;
             case 5://J LEFT-MIDDLE FLAT-SIDE 21/22
-                tetromino[0] = new Point(3, -1);
-                tetromino[1] = new Point(4, -1);
-                tetromino[2] = new Point(5, -1);
-                tetromino[3] = new Point(3, -2);
+                tetromino[0] = new Minos(3, -1);
+                tetromino[1] = new Minos(4, -1);
+                tetromino[2] = new Minos(5, -1);
+                tetromino[3] = new Minos(3, -2);
                 color = Color.blue;
                 break;
             case 6://L LEFT-MIDDLE FLAT-SIDE 21/22
-                tetromino[0] = new Point(3, -1);
-                tetromino[1] = new Point(4, -1);
-                tetromino[2] = new Point(5, -1);
-                tetromino[3] = new Point(5, -2);
+                tetromino[0] = new Minos(3, -1);
+                tetromino[1] = new Minos(4, -1);
+                tetromino[2] = new Minos(5, -1);
+                tetromino[3] = new Minos(5, -2);
                 color = Color.orange;
                 break;
         }
@@ -370,14 +370,14 @@ class Tetromino{
     }
     
     private void adaptToGrid(){
-        for (Point point : tetromino) {
+        for (Minos point : tetromino) {
             point.x *= 20;
             point.y *= 20;
         }
     }
     
     private void unadaptToGrid(){
-        for (Point point : tetromino) {
+        for (Minos point : tetromino) {
             point.x /= 20;
             point.y /= 20;
         }
@@ -386,15 +386,32 @@ class Tetromino{
     public void rotation(){
         //I
         if(color == Color.cyan){
-            Point second = new Point(tetromino[1]);
+            Minos second = new Minos(tetromino[1]);
+            boolean isHorizontal = true;
             
-            for (Point point : tetromino) {
-                point.x = second.x;
+            for (int i = 1; i < 4; i++) {
+                if(!(tetromino[i].y == tetromino[i-1].y))
+                    isHorizontal = false;
             }
             
-            tetromino[0].y -= 20;
-            tetromino[2].y += 20;
-            tetromino[3].y += 40;
+            if(isHorizontal){
+                for (Minos minos : tetromino) {
+                    minos.x = second.x;
+                }
+                
+                tetromino[0].y -= 20;
+                tetromino[2].y += 20;
+                tetromino[3].y += 40;
+            }
+            else{
+                for (Minos minos : tetromino) {
+                    minos.y = second.y;
+                }
+                
+                tetromino[0].x -= 20;
+                tetromino[2].x += 20;
+                tetromino[3].x += 40;
+            }
         }
         //O
         else if(color == Color.yellow)
@@ -402,47 +419,83 @@ class Tetromino{
         //T
         else if(color == Color.magenta){
         }
-        /*//S
-        if(color == Color.green){
+        //S
+        else if(color == Color.green){
+            Minos second = new Minos(tetromino[1]);
+            boolean isHorizontal = false;
+            
+            if(tetromino[0].y == tetromino[1].y){
+                isHorizontal = true;
+            }
+            
+            if(isHorizontal){
+                tetromino[0].x = second.x;
+                tetromino[2].x = second.x + 20;
+                tetromino[3].x = second.x + 20;
+                
+                tetromino[0].y -= 20;
+                tetromino[2].y += 20;
+                tetromino[3].y += 40;
+            }
+            else{
+                tetromino[0].y = second.y;
+                tetromino[2].y = second.y - 20;
+                tetromino[3].y = second.y - 20;
+                
+                tetromino[0].x -= 20;
+                tetromino[2].x -= 20;
+            }
         }
         //Z
-        if(color == Color.red){
-        }*/
+        else if(color == Color.red){
+            Minos second = new Minos(tetromino[2]);
+            boolean isHorizontal = false;
+            
+            if(tetromino[0].y == tetromino[1].y){
+                isHorizontal = true;
+            }
+            
+            if(isHorizontal){
+                tetromino[0].x = second.x - 20;
+                tetromino[1].x = second.x - 20;
+                tetromino[3].x = second.x;
+                
+                tetromino[0].y += 20;
+                tetromino[2].y -= 20;
+                tetromino[3].y -= 40;
+            }
+            else{
+                tetromino[0].y = second.y - 20;
+                tetromino[1].y = second.y - 20;
+                tetromino[3].y = second.y;
+                
+                tetromino[1].x += 20;
+                tetromino[3].x += 20;
+            }
+        }
         //J
         else if(color == Color.blue){
         }
         //L
         else if(color == Color.orange){
         }
-        //I S Z
-        else{
-            Point second = new Point(tetromino[1]);
-            
-            for (Point point : tetromino) {
-                point.x = second.x;
-            }
-            
-            tetromino[0].y -= 20;
-            tetromino[2].y += 20;
-            tetromino[3].y += 40;
-        }
     }
 }
 
 
-class Point {
+class Minos {
     int x, y;
 
-    public Point(Point p){
+    public Minos(Minos p){
         this(p.x, p.y);
     }
     
-    public Point(int x, int y) {
+    public Minos(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public Point() {
+    public Minos() {
     }
     
     @Override
@@ -456,7 +509,7 @@ class Point {
         // type check and cast
         if (getClass() != o.getClass())
             return false;
-        Point point = (Point) o;
+        Minos point = (Minos) o;
         // field comparison
         return Objects.equals(x, point.x)
                 && Objects.equals(y, point.y);
