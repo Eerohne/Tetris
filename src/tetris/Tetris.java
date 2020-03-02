@@ -376,27 +376,55 @@ class Tetromino{
         }
     }
     
+    private void unadaptToGrid(){
+        for (Point point : tetromino) {
+            point.x /= 20;
+            point.y /= 20;
+        }
+    }
+    
     public void rotation(){
         //I
         if(color == Color.cyan){
+            Point second = new Point(tetromino[1]);
+            
+            for (Point point : tetromino) {
+                point.x = second.x;
+            }
+            
+            tetromino[0].y -= 20;
+            tetromino[2].y += 20;
+            tetromino[3].y += 40;
         }
         //O
-        if(color == Color.yellow)
+        else if(color == Color.yellow)
             return;
         //T
-        if(color == Color.magenta){
+        else if(color == Color.magenta){
         }
-        //S
+        /*//S
         if(color == Color.green){
         }
         //Z
         if(color == Color.red){
-        }
+        }*/
         //J
-        if(color == Color.blue){
+        else if(color == Color.blue){
         }
         //L
-        if(color == Color.orange){
+        else if(color == Color.orange){
+        }
+        //I S Z
+        else{
+            Point second = new Point(tetromino[1]);
+            
+            for (Point point : tetromino) {
+                point.x = second.x;
+            }
+            
+            tetromino[0].y -= 20;
+            tetromino[2].y += 20;
+            tetromino[3].y += 40;
         }
     }
 }
