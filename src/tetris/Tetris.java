@@ -1,6 +1,7 @@
 package tetris;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -48,14 +49,20 @@ class Game extends JPanel implements KeyListener{
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        this.setBackground(Color.white);
+        this.setBackground(Color.black);
         
-        for (Tetromino tetromino : tetrominos) {
-            drawTetromino(tetromino, g);
+        if(gameOver()){
+            gameOverScreen(g);
         }
-        
-        //updateTetromino();
-        drawTetromino(bloc, g);
+        else{
+            for (Tetromino tetromino : tetrominos) {
+                drawTetromino(tetromino, g);
+            }
+
+            //updateTetromino();
+            drawTetromino(bloc, g);
+            gravity(g);
+        }
     }
     
     private void drawTetromino(Tetromino tetromino, Graphics g){
@@ -81,26 +88,79 @@ class Game extends JPanel implements KeyListener{
             tetrominos.add(temp);
             this.repaint();
             bloc.generateTetromino();
-        } 
-        else{
-            
         }
     }
 
-    public boolean fullRow(){
+    private ArrayList<Integer> fullRows(){
+        ArrayList<Integer> rows = new ArrayList<>();
+        int row = 0;
+        
         for(int i = 0; i < 20; i++){
-            
+            for (Tetromino tetromino : tetrominos) {
+                for (Point point : tetromino.tetromino) {
+                    if(point.y == (i*20))
+                        ++row;
+                }
+            }
+            if(row==10){
+                for (Tetromino tetromino : tetrominos) {
+                    for (int j = 0; j < 4; j++) {
+                        if(tetromino.tetromino[j].y == (i*20))
+                            tetromino.tetromino[j].destroy();
+                    }
+                }
+                rows.add(i);
+            }              
+            else row = 0;
         }
         
-        return false;
+        switch(rows.size()){
+            case 1:
+                score += 400;
+                break;
+            case 2:
+                score += 1000;
+                break;
+            case 3:
+                score += 3000;
+                break;
+            case 4:
+                score += 12000;
+                break;
+            default:
+                break;
+        }
+        
+        return rows;
+    }
+    
+    public void gravity(Graphics g){
+        ArrayList<Integer> fullRows = fullRows();
+        if(!fullRows.isEmpty()){
+            for (Integer i : fullRows) {
+                g.setColor(Color.black);
+                g.fillRect(0, i*20, 200, 20);
+            }
+            
+            for (Integer fullRow : fullRows) {
+                for(int i = fullRow; i >= 0; i--){
+                    for (Tetromino tetromino : tetrominos) {
+                        for (Point point : tetromino.tetromino) {
+                            if(point.y < i*20){
+                                point.y += 20;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     public boolean collision(){
-        boolean isCollision = false;
         
         for (Point point : bloc.tetromino) {
             if(point.y >= 400)
-                isCollision = true;
+                return true;
             for (Tetromino tetromino : tetrominos) {
                 for (Point staticPoint : tetromino.tetromino) {
                     if(point.equals(staticPoint))
@@ -109,9 +169,7 @@ class Game extends JPanel implements KeyListener{
             }
         }
         
-        if(isCollision){}
-        
-        return isCollision;
+        return false;
     }
     
     public boolean containsEarthCollision(){
@@ -128,31 +186,52 @@ class Game extends JPanel implements KeyListener{
     private boolean sideCollision(boolean left){
         for (Point point : bloc.tetromino) {
             if(left){
-                if(point.x == 0)
+                if(point.x < 0)
                     return true;
-                for (Tetromino tetromino : tetrominos) {
-                    for (Point staticPoint : tetromino.tetromino) {
-                        Point tempP = new Point(staticPoint);
-                        //tempP.x -= 20;
-                        if(tempP.equals(point))
-                            return true;
-                    }
-                }
             }
             if(!left){
-                if(point.x == 180){
+                if(point.x >= 200)
                     return true;
-                }
-                for (Tetromino tetromino : tetrominos) {
-                    for (Point staticPoint : tetromino.tetromino) {
-                        if(staticPoint.equals(point))
+            }
+            
+            for (Tetromino tetromino : tetrominos) {
+                for (Point staticPoint : tetromino.tetromino) {
+                    if(staticPoint.equals(point)){
+                        if(staticPoint.equals(point)){
+                            System.out.println("INDEED");
                             return true;
+                        }
                     }
                 }
             }
         }
         
         return false;
+    }
+    
+    public boolean gameOver(){
+        for (Point point : bloc.tetromino) {
+            if(collision() && point.y <= 0)
+                return true;
+        }
+        
+        return false;
+    }
+    
+    public void gameOverScreen(Graphics g){
+        if(score > highScore){
+            highScore = score;
+        }
+        
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 25));
+        g.setColor(Color.RED);
+        g.drawString("GAME OVER", 10, 20*2);
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
+        g.setColor(Color.WHITE);
+        g.drawString("Score : " + this.score, 10, 20*3+5);
+        g.drawString("High Score : " + this.highScore, 10, 20*4+10);
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
+        g.drawString("Press any key to continue...", 10, 20*5+15);
     }
     
     @Override
@@ -162,32 +241,54 @@ class Game extends JPanel implements KeyListener{
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
         
-        switch(keyCode){
-            case KeyEvent.VK_ESCAPE:
-                System.exit(0);
-                break;
-            case KeyEvent.VK_DOWN:
-                if(!collision()){
-                    for (Point point : bloc.tetromino)
-                        point.y += 20;
-                }
-                break;
-            case KeyEvent.VK_UP:
-                break;
-            case KeyEvent.VK_LEFT:
-                if(!sideCollision(true))
+        if(gameOver()){
+            switch(keyCode){
+                case KeyEvent.VK_ESCAPE:
+                    System.exit(0);
+                    break;
+                default:
+                    score = 0;
+                    tetrominos.clear();
+                    bloc.generateTetromino();
+            }
+        }else{
+            switch(keyCode){
+                case KeyEvent.VK_ESCAPE:
+                    System.exit(0);
+                    break;
+                case KeyEvent.VK_SPACE:
+                    bloc.generateTetromino();
+                    break;
+                case KeyEvent.VK_DOWN:
+                    if(!collision()){
+                        for (Point point : bloc.tetromino)
+                            point.y += 20;
+                    }
+                    break;
+                case KeyEvent.VK_UP:
+                    bloc.rotation();
+                    break;
+                case KeyEvent.VK_LEFT:
                     for (Point point : bloc.tetromino){
                         point.x -= 20;
-                        repaint();
                     }
-                break;
-            case KeyEvent.VK_RIGHT:
-                if(!sideCollision(false))
+                    if(sideCollision(true))
+                        for (Point point : bloc.tetromino){
+                            point.x += 20;
+                        }
+                    repaint();
+                    break;
+                case KeyEvent.VK_RIGHT:
                     for (Point point : bloc.tetromino){
-                        point.x += 20;  
-                        repaint();
+                        point.x += 20;
                     }
-                break;
+                    if(sideCollision(false))
+                        for (Point point : bloc.tetromino){
+                            point.x -= 20;
+                        }
+                    repaint();
+                    break;
+            }
         }
     }
 
@@ -213,7 +314,7 @@ class Tetromino{
     
     public void generateTetromino(){
         Random random = new Random();
-        switch(random.nextInt(6)){
+        switch(random.nextInt(7)){
             case 0://I MIDDLE FLAT 21
                 tetromino[0] = new Point(3, -1);
                 tetromino[1] = new Point(4, -1);
@@ -274,6 +375,30 @@ class Tetromino{
             point.y *= 20;
         }
     }
+    
+    public void rotation(){
+        //I
+        if(color == Color.cyan){
+        }
+        //O
+        if(color == Color.yellow)
+            return;
+        //T
+        if(color == Color.magenta){
+        }
+        //S
+        if(color == Color.green){
+        }
+        //Z
+        if(color == Color.red){
+        }
+        //J
+        if(color == Color.blue){
+        }
+        //L
+        if(color == Color.orange){
+        }
+    }
 }
 
 
@@ -307,5 +432,10 @@ class Point {
         // field comparison
         return Objects.equals(x, point.x)
                 && Objects.equals(y, point.y);
+    }
+    
+    public void destroy(){
+        this.x = 1000;
+        this.y = -1000;
     }
 }
