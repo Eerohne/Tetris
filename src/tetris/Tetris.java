@@ -491,8 +491,8 @@ class Tetromino{
                     int yTranslation = (minos.x - pivot.x );
                     int xTranslation = (pivot.y - minos.y);
 
-                    minos.x = (pivot.y  + xTranslation);
-                    minos.y = (pivot.x  + yTranslation);
+                    minos.x = (pivot.y/2  + xTranslation);
+                    minos.y = (pivot.x/2 + yTranslation);
                     
                     //minos.x = (pivot.x + yTranslation);
                 
