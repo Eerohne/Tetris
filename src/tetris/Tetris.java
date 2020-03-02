@@ -385,7 +385,7 @@ class Tetromino{
     
     public void rotation(){
         //I
-        if(color == Color.cyan){
+        /*if(color == Color.cyan){
             Minos second = new Minos(tetromino[1]);
             boolean isHorizontal = true;
             
@@ -412,11 +412,11 @@ class Tetromino{
                 tetromino[2].x += 20;
                 tetromino[3].x += 40;
             }
-        }
+        }*/
         //O
-        else if(color == Color.yellow)
+        if(color == Color.yellow)
             return;
-        //T
+        /*//T
         else if(color == Color.magenta){
         }
         //S
@@ -478,6 +478,27 @@ class Tetromino{
         }
         //L
         else if(color == Color.orange){
+        }*/
+        
+        else{
+            //unadaptToGrid();
+            Minos pivot = new Minos(tetromino[2]);
+            //pivot.x /= 20;
+            //pivot.y /= 20;
+            
+            for (Minos minos : tetromino) {
+                //if(!minos.equals(pivot)){
+                    int yTranslation = (minos.x - pivot.x );
+                    int xTranslation = (pivot.y - minos.y);
+
+                    minos.x = (pivot.y  + xTranslation);
+                    minos.y = (pivot.x  + yTranslation);
+                    
+                    //minos.x = (pivot.x + yTranslation);
+                
+            }
+            
+            //adaptToGrid();
         }
     }
 }
