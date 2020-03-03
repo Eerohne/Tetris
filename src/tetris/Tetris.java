@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
 import javax.swing.JFrame;
@@ -198,7 +199,6 @@ class Game extends JPanel implements KeyListener{
                 for (Minos staticMinos : tetromino.tetromino) {
                     if(staticMinos.equals(point)){
                         if(staticMinos.equals(point)){
-                            System.out.println("INDEED");
                             return true;
                         }
                     }
@@ -260,10 +260,9 @@ class Game extends JPanel implements KeyListener{
                     bloc.generateTetromino();
                     break;
                 case KeyEvent.VK_DOWN:
-                    if(!collision()){
+                    if(!collision())
                         for (Minos point : bloc.tetromino)
                             point.y += 20;
-                    }
                     break;
                 case KeyEvent.VK_UP:
                     bloc.rotation();
@@ -384,122 +383,30 @@ class Tetromino{
     }
     
     public void rotation(){
-        //I
-        /*if(color == Color.cyan){
-            Minos second = new Minos(tetromino[1]);
-            boolean isHorizontal = true;
-            
-            for (int i = 1; i < 4; i++) {
-                if(!(tetromino[i].y == tetromino[i-1].y))
-                    isHorizontal = false;
-            }
-            
-            if(isHorizontal){
-                for (Minos minos : tetromino) {
-                    minos.x = second.x;
-                }
-                
-                tetromino[0].y -= 20;
-                tetromino[2].y += 20;
-                tetromino[3].y += 40;
-            }
-            else{
-                for (Minos minos : tetromino) {
-                    minos.y = second.y;
-                }
-                
-                tetromino[0].x -= 20;
-                tetromino[2].x += 20;
-                tetromino[3].x += 40;
-            }
-        }*/
         //O
         if(color == Color.yellow)
             return;
-        /*//T
-        else if(color == Color.magenta){
-        }
-        //S
-        else if(color == Color.green){
-            Minos second = new Minos(tetromino[1]);
-            boolean isHorizontal = false;
-            
-            if(tetromino[0].y == tetromino[1].y){
-                isHorizontal = true;
-            }
-            
-            if(isHorizontal){
-                tetromino[0].x = second.x;
-                tetromino[2].x = second.x + 20;
-                tetromino[3].x = second.x + 20;
-                
-                tetromino[0].y -= 20;
-                tetromino[2].y += 20;
-                tetromino[3].y += 40;
-            }
-            else{
-                tetromino[0].y = second.y;
-                tetromino[2].y = second.y - 20;
-                tetromino[3].y = second.y - 20;
-                
-                tetromino[0].x -= 20;
-                tetromino[2].x -= 20;
-            }
-        }
-        //Z
-        else if(color == Color.red){
-            Minos second = new Minos(tetromino[2]);
-            boolean isHorizontal = false;
-            
-            if(tetromino[0].y == tetromino[1].y){
-                isHorizontal = true;
-            }
-            
-            if(isHorizontal){
-                tetromino[0].x = second.x - 20;
-                tetromino[1].x = second.x - 20;
-                tetromino[3].x = second.x;
-                
-                tetromino[0].y += 20;
-                tetromino[2].y -= 20;
-                tetromino[3].y -= 40;
-            }
-            else{
-                tetromino[0].y = second.y - 20;
-                tetromino[1].y = second.y - 20;
-                tetromino[3].y = second.y;
-                
-                tetromino[1].x += 20;
-                tetromino[3].x += 20;
-            }
-        }
-        //J
-        else if(color == Color.blue){
-        }
-        //L
-        else if(color == Color.orange){
-        }*/
-        
         else{
             //unadaptToGrid();
-            Minos pivot = new Minos(tetromino[2]);
-            //pivot.x /= 20;
-            //pivot.y /= 20;
+            Minos pivot = new Minos(tetromino[1]);
+            
+            System.out.println(pivot);
+            
             
             for (Minos minos : tetromino) {
-                //if(!minos.equals(pivot)){
+                if(!minos.equals(pivot)){
                     int yTranslation = (minos.x - pivot.x );
                     int xTranslation = (pivot.y - minos.y);
-
-                    minos.x = (pivot.y/2  + xTranslation);
-                    minos.y = (pivot.x/2 + yTranslation);
-                    
-                    //minos.x = (pivot.x + yTranslation);
-                
+                    minos.x = (pivot.x + xTranslation);
+                    minos.y = (pivot.y + yTranslation);
+                }
             }
-            
-            //adaptToGrid();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Tetromino{" + "tetromino=" + Arrays.toString(tetromino) + '}';
     }
 }
 
@@ -539,5 +446,10 @@ class Minos {
     public void destroy(){
         this.x = 1000;
         this.y = -1000;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
     }
 }
