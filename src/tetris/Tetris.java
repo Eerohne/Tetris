@@ -266,6 +266,16 @@ class Game extends JPanel implements KeyListener{
                     break;
                 case KeyEvent.VK_UP:
                     bloc.rotation();
+                    while(sideCollision(true)){
+                        for (Minos minos : bloc.tetromino) {
+                            minos.x += 20;
+                        }
+                    }
+                    while(sideCollision(false)){
+                        for (Minos minos : bloc.tetromino) {
+                            minos.x -= 20;
+                        }
+                    }
                     break;
                 case KeyEvent.VK_LEFT:
                     for (Minos point : bloc.tetromino){
