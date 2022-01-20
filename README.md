@@ -1,2 +1,2 @@
 # Tetris
-The old good Tetris, but less good than the original
+The good old Tetris, but less good than the original
